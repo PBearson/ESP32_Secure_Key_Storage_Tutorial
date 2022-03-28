@@ -243,13 +243,53 @@ BLK1 hides the true value of the flash encryption key due to the secrecy of that
 
 ### Verifying the Defense
 
-TODO
+Now we again assume the role of an attacker. Download the firmware from the ESP32:
+
+```
+esptool.py read_flash 0x10000 0x10000 flash_contents.bin
+```
+
+When the download completes, try to find the SSID and password again:
+
+```
+strings flash_contents.bin | grep -A 1 {SSID}
+```
+
+You will find that this command does not return any output (if it does, you did not enable flash encryption!). That means that our WiFi credentials are safely protected by the flash encryption key, which in turn is protected by the secure key storage.
 
 ### Uploading New Firmware
 
-TODO
+The bootloader will only perform the encryption operation once, so uploading another plaintext firmware will result in soft bricking the device, because the ESP32 will assume flash contents are encrypted and attempt to transparently "decrypt" this content before it reaches the processor.
+
+Let's try to upload the "hello_world" application again. Navigate to the "hello_world" project directory and run:
+
+```
+idf.py build flash monitor
+```
+
+You will see a "flash read err" message indicating that the firmware cannot be read by the processor.
 
 ![flash_read_error](https://user-images.githubusercontent.com/11084018/160431981-5fe5413e-1263-4e0d-ba55-a53672474456.png)
+
+However, since we pre-generated the flash encryption key which is stored in eFuse Block 1, we can encrypt the firmware before uploading it to the board. Copy the flash encryption key into the current directory. Then run the following commands:
+
+```
+espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/bootloader/bootloader.bin.encrypted --address 0x1000 build/bootloader/bootloader.bin
+espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/partition_table/partition-table.bin.encrypted --address 0x8000 build/partition_table/partition-table.bin
+espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/helloworld.bin.encrypted --address 0x10000 build/hello-world.bin
+esptool.py write_flash 0x1000 build/bootloader/bootloader.bin.encrypted 0x8000 build/partition_table/partition-table.bin.encrypted 0x10000 build/hello-world.bin.encrypted
+idf.py monitor
+```
+
+In order, each command:
+
+1) Encrypts the bootloader
+2) Encrypts the partition table, which points to the starting address of the firmware
+3) Encrypts the firmware
+4) Uploads the encrypted files to their appropriate addresses in the flash
+5) Opens the serial monitor
+
+You will now see the "hello_world" application running now without any errors. This method shows that as long as you have the pre-generated flash encryption key, you can always upload new firmware to the ESP32.
 
 ### Decrypting the Firmware
 
