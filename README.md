@@ -37,7 +37,7 @@ You can also click <ins>Settings</ins> to modify the VM before booting it up. By
 
 ### Verifying the Setup
 
-First, log into the machine. The username and password are **esplab:esplab**. Then click on the terminal icon on the left side of the screen. If all goes well, you will be greeted with the following message, indicating that the development environment is successfully installed:
+First, log into the machine. The username and password are both **esplab**. Then click on the terminal icon on the left side of the screen. If all goes well, you will be greeted with the following message, indicating that the development environment is successfully installed:
 
 ![vm_verify](https://user-images.githubusercontent.com/11084018/160431442-33fa2cc7-35ff-4f91-8216-c099e1f2f584.png)
 
