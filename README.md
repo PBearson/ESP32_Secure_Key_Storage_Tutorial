@@ -16,7 +16,7 @@ The attack and defense presented in this lab are nearly identical to our [flash 
 
 ### Hardware Needed
 * USB A to Micro USB cable.
-* An Hiletgo ESP-WROOM-32 development board.
+* A Hiletgo ESP-WROOM-32 development board.
 
 ### Software Needed
 * Ubuntu 20.04 disc image (ISO)
