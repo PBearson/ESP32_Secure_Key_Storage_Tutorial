@@ -33,13 +33,23 @@ Download the VM image from the lab materials link. Once it finishes downloading,
 
 ![vm_setup](https://user-images.githubusercontent.com/11084018/160431335-67865a6e-2494-490c-9bbb-247b14f10d3a.png)
 
+You can also click <ins>Settings</ins> to modify the VM before booting it up. By default, it will use 8 GB of RAM and 2 CPU cores, so change these settings to suit your environment. Once you are done, click <ins>Start</ins> to boot up the machine.
+
+### Verifying the Setup
+
 TODO
 
 ![vm_verify](https://user-images.githubusercontent.com/11084018/160431442-33fa2cc7-35ff-4f91-8216-c099e1f2f584.png)
 
+### Setting up the Serial Port
+
 TODO
 
 ![usb_device_highlighted](https://user-images.githubusercontent.com/11084018/160431513-580652e5-1bf5-4e42-8bec-a4af1f95f1a2.png)
+
+### Running the Example Application
+
+TODO
 
 ![project_build_complete](https://user-images.githubusercontent.com/11084018/160431536-f400cc48-5f35-46b8-beca-4d2794655456.png)
 
@@ -47,17 +57,43 @@ TODO
 
 ![output_monitor](https://user-images.githubusercontent.com/11084018/160431581-532f511d-a9ca-4bcf-a3ea-fad5e98e4133.png)
 
+### Viewing the Secure Key Storage
+
+TODO
+
 ![efuse_fields_initial](https://user-images.githubusercontent.com/11084018/160431621-197ecff4-d243-4bb7-9c2f-37ba665e982f.png)
+
+## Physical Attack
+
+### Running a Sensitive Application
+
+TODO
 
 ![menuconfig_password](https://user-images.githubusercontent.com/11084018/160431684-f3e81c93-33c3-4f94-abdb-04c8599bd18e.png)
 
 ![connected_to_wifi](https://user-images.githubusercontent.com/11084018/160431718-3942bde4-fc1b-4280-8257-a2bcadcfb646.png)
 
+### Stealing WiFi Credentials
+
+TODO
+
 ![read_flash](https://user-images.githubusercontent.com/11084018/160431738-c4a6ab85-ce6c-4f74-a09a-a16e24a7c7cd.png)
 
 ![find_wifi_credentials_in_firmware](https://user-images.githubusercontent.com/11084018/160431760-1c468773-52a4-462e-b2dc-bb5ca12722e3.png)
 
+## Defense Against the Physical Attack
+
+### Generating the Flash Encryption Key
+
+TODO
+
+### Enabling Flash Encryption
+
+TODO
+
 ![burn_flash_encryption_key](https://user-images.githubusercontent.com/11084018/160431784-aa84b6e0-ffcc-4b52-9b9e-4115594db4d0.png)
+
+### Running an Encrypted Application
 
 ![flash_encryption_bootloader](https://user-images.githubusercontent.com/11084018/160431813-e35ea1fa-2ec0-4605-91a9-bc5e793487d1.png)
 
@@ -65,6 +101,22 @@ TODO
 
 ![burn_key_error](https://user-images.githubusercontent.com/11084018/160431859-f500a0c0-43db-41f9-a4fa-c7e1a76ffe08.png)
 
+### Verifying the Defense
+
+TODO
+
+### Uploading New Firmware
+
+TODO
+
 ![flash_read_error](https://user-images.githubusercontent.com/11084018/160431981-5fe5413e-1263-4e0d-ba55-a53672474456.png)
 
+### Decrypting the Firmware
+
+TODO
+
 ![find_wifi_credentials_in_decrypted_firmware](https://user-images.githubusercontent.com/11084018/160432011-3fe31709-46ed-42fa-b862-0b630a0b0e4e.png)
+
+## Take Away
+
+TODO
