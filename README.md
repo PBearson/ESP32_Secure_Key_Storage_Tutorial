@@ -125,17 +125,55 @@ The FLASH_CRYPT_CNT and BLK1 eFuses are most important to flash encryption. FLAS
 
 ### Running a Sensitive Application
 
-TODO
+Now we will run a more sensitive application on the ESP32 and show how credentials can be stolen off the device when flash encryption is not enabled. Download this repository into your workplace directory:
+
+```
+git clone https://github.com/PBearson/ESP32_Secure_Key_Storage_Tutorial.git
+```
+
+Navigate to the new station project folder and run:
+
+```
+idf.py menuconfig
+```
+
+This will open a configuration window. You can use the arrow keys to navigate to each option, press `enter` to enter a sub-menu, and press `ESC` to leave a submenu. The controls are also shown at the bottom of the window.
+
+Navigate to the `Example Configuration` menu and enter your WiFi SSID and password. (For context to my screenshots, I have opened a mobile hotspot on my machine and set the SSID to **esplab-hotspot** and password to **ilovebagels**.)
 
 ![menuconfig_password](https://user-images.githubusercontent.com/11084018/160431684-f3e81c93-33c3-4f94-abdb-04c8599bd18e.png)
+
+Press `ESC` to return to the main menu, then `ESC` again to quit. You will be prompted to save the changes. Press `Y` to confirm. Now run:
+
+```
+idf.py flash monitor
+```
+
+This will build, flash, and monitor your application all in one command. In the serial monitor, you should see that the ESP32 was able to successfully connect to your WiFi network.
 
 ![connected_to_wifi](https://user-images.githubusercontent.com/11084018/160431718-3942bde4-fc1b-4280-8257-a2bcadcfb646.png)
 
 ### Stealing WiFi Credentials
 
-TODO
+Now we will assume the role of an attacker who has just gained physical access to the ESP32 and wants to discover the WiFi credentials in the flash. We will soon see that this is all too simple.
+
+First, download the firmware from the ESP32:
+
+```
+esptool.py read_flash 0x10000 0x10000 flash_contents.bin
+```
+
+This will copy the ESP32's flash contents in the address range 0x10000 - 0x20000 into a file named <ins>flash_contents.bin</ins>.
 
 ![read_flash](https://user-images.githubusercontent.com/11084018/160431738-c4a6ab85-ce6c-4f74-a09a-a16e24a7c7cd.png)
+
+Now run:
+
+```
+strings flash_contents.bin | grep -A 1 {SSID}
+```
+
+Replace {SSID} with your network SSID. You should see the SSID return in red text and password immediately after.
 
 ![find_wifi_credentials_in_firmware](https://user-images.githubusercontent.com/11084018/160431760-1c468773-52a4-462e-b2dc-bb5ca12722e3.png)
 
