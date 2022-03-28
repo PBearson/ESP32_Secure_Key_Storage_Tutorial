@@ -37,25 +37,73 @@ You can also click <ins>Settings</ins> to modify the VM before booting it up. By
 
 ### Verifying the Setup
 
-TODO
+First, log into the machine. The username and password are **esplab:esplab**. Then click on the terminal icon on the left side of the screen. If all goes well, you will be greeted with the following message, indicating that the development environment is successfully installed:
 
 ![vm_verify](https://user-images.githubusercontent.com/11084018/160431442-33fa2cc7-35ff-4f91-8216-c099e1f2f584.png)
 
 ### Setting up the Serial Port
 
-TODO
+Now we will verify that we can program and monitor our ESP32. First, we need to install the necessary drivers. Most ESP32 boards will contain a CP210X chip which allows data transfer between UART (used by the ESP32) and USB (used by the cable). However, communicating with this chip, and therefore the ESP32 itself, requires the correct drivers to be installed on your computer. You can download the CP210X drivers to your host machine from [here](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers).
+
+Now, plug the ESP32 into your computer. You can confirm that the driver was installed correctly by navigating to <ins>Devices → USB</ins> in your VM window. You should see a device such as "Silicon Labs CP2102 USB to UART Controller". Click this button in order to enable communication between your VM and the ESP32.
 
 ![usb_device_highlighted](https://user-images.githubusercontent.com/11084018/160431513-580652e5-1bf5-4e42-8bec-a4af1f95f1a2.png)
 
 ### Running the Example Application
 
-TODO
+Now we will run the example "hello_world" application for the ESP32, located in the following directory: _/home/esplab/esp/workspace/hello_world_. In your terminal, navigate to this directory. Now run:
+
+```
+idf.py build
+```
+
+This will compile the application. The compilation will take a moment to complete. If all goes well, you will be greeted with a "Project build complete" message and a command to upload the firmware to the ESP32, as shown below:
 
 ![project_build_complete](https://user-images.githubusercontent.com/11084018/160431536-f400cc48-5f35-46b8-beca-4d2794655456.png)
 
+To upload the compiled firmware to your board, run:
+
+```
+idf.py flash
+```
+
+A common error you may see at this point is "RuntimeError: No serial ports founds", which occurs when the build system cannot identify the ESP32 serial port. You can find this serial port yourself by running:
+
+```
+ls /dev/ttyUSB*
+```
+
+This should return a file such as "/dev/ttyUSB0". If you see this file, then rerun the command as:
+
+```
+idf.py -p /dev/ttyUSB0 flash
+```
+
+If you do not see this file, that means your VM cannot see the ESP32. Double-check to ensure that the USB-to-UART driver was successfully installed. Another possibility is that your ESP32 board contains a different serial-to-USB chip than the CP210X. In that case, you should consult the documentation for that board to identify the correct chip and download the appropriate driver.
+
+**NOTE: If using the Hiletgo ESP-WROOM-32 development board, you may need to hold down the IO0 button on the ESP32 when the build system tries to connect to the ESP32's serial port. If you do not hold down the IO0 button during this step, the build system may fail to detect the serial port.**
+
+If the flash command works, you will see that the firmware will upload to the board, as shown below:
+
 ![running_flash_command](https://user-images.githubusercontent.com/11084018/160431565-1a5d21c0-f227-48d9-b4e5-1198493d3c2e.png)
 
+To monitor output from the application, run:
+
+```
+idf.py monitor
+```
+
+Or:
+
+```
+idf.py -p /dev/ttyUSB0 monitor
+```
+
+This application prints "Hello world", various information about your particular board, and resets after 10 seconds.
+
 ![output_monitor](https://user-images.githubusercontent.com/11084018/160431581-532f511d-a9ca-4bcf-a3ea-fad5e98e4133.png)
+
+To exit this monitor, press **Control + ]**.
 
 ### Viewing the Secure Key Storage
 
