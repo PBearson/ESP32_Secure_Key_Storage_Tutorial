@@ -29,7 +29,7 @@ A preconfigured VM with all the necessary software can be downloaded [here](http
 
 ### Setting up the Virtual Machine
 
-Download the VM image from the lab materials link. Once it finishes downloading, you need to import it into VirtualBox. In VirtualBox, click on <ins>File → Import Appliance</ins>. Select the downloaded image. Click Next, then Import. After a minute or so, the VM will appear on the left side of the window, as shown below:
+Download the VM image from the lab materials link. Once it finishes downloading, you need to import it into VirtualBox. In VirtualBox, click on <ins>File → Import Appliance</ins>. Select the downloaded image. Click <ins>Next</ins>, then <ins>Import</ins>. After a minute or so, the VM will appear on the left side of the window, as shown below:
 
 ![vm_setup](https://user-images.githubusercontent.com/11084018/160431335-67865a6e-2494-490c-9bbb-247b14f10d3a.png)
 
