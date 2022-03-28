@@ -6,7 +6,7 @@ In this tutorial, the student will learn how to use the secure key storage capab
 
 ### Author's Note
 
-The attack and defense presented in this lab are identical to our [flash encryption tutorial](https://github.com/PBearson/ESP32_Flash_Encryption_Tutorial). However, this lab places a greater emphasis on the ESP32's secure key storage capabilities. We also enable flash encryption in Release Mode instead of Development Mode.
+The attack and defense presented in this lab are nearly identical to our [flash encryption tutorial](https://github.com/PBearson/ESP32_Flash_Encryption_Tutorial). However, this lab places a greater emphasis on the ESP32's secure key storage capabilities. We also enable flash encryption in Release Mode instead of Development Mode.
 
 ### Overview
 
