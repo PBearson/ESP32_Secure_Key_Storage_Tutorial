@@ -107,9 +107,19 @@ To exit this monitor, press **Control + ]**.
 
 ### Viewing the Secure Key Storage
 
-TODO
+The ESP32's secure key storage is managed by a 1024-bit eFuse memory region, subdivided into 4 blocks of 256 bits each. Block 1 and Block 2 are used for secure key storage; Block 1 stores a flash encryption key, while Block 2 stores a Secure Boot key. Block 0 is used to configure the ESP32, while Block 3 can be defined by the programmer. In this lab, we will focus on Block 1 (flash encryption key) and some contents in Block 0 which affect the flash encryption behavior.
+
+To view the eFuse memory contents, simply run:
+
+```
+espefuse.py summary
+```
+
+This will print the identifier, description, value, and read/write permissions of each eFuse. You should see output similar to below:
 
 ![efuse_fields_initial](https://user-images.githubusercontent.com/11084018/160431621-197ecff4-d243-4bb7-9c2f-37ba665e982f.png)
+
+The FLASH_CRYPT_CNT and BLK1 eFuses are most important to flash encryption. FLASH_CRYPT_CONFIG is also important as it affects the behavior of the encryption algorithm. For more information on this algorithm, see [here](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/security/flash-encryption.html#flash-encryption-algorithm).
 
 ## Physical Attack
 
