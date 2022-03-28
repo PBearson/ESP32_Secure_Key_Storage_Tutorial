@@ -146,7 +146,7 @@ Navigate to the `Example Configuration` menu and enter your WiFi SSID and passwo
 Press `ESC` to return to the main menu, then `ESC` again to quit. You will be prompted to save the changes. Press `Y` to confirm. Now run:
 
 ```
-idf.py flash monitor
+idf.py build flash monitor
 ```
 
 This will build, flash, and monitor your application all in one command. In the serial monitor, you should see that the ESP32 was able to successfully connect to your WiFi network.
