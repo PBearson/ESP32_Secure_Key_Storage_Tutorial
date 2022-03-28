@@ -23,7 +23,7 @@ The attack and defense presented in this lab are nearly identical to our [flash 
 * VirtualBox
 * ESP-IDF version 4.1 or higher: ESP-IDF is a framework for ESP32 that comes with all necessary software, including the compiler toolchain and various tools for programming and inspecting the ESP32's secure key storage.
 
-A preconfigured VM with all the necessary software can be downloaded [here](http://cyberforensic.net/labs/iot_secure_key_storage/files/ESP32%20Secure%20Key%20Storage%20Lab.ova).
+A preconfigured VM with all the necessary software can be downloaded [here](http://cyberforensic.net/labs/iot_secure_key_storage/files/).
 
 ## Environment Setup
 
