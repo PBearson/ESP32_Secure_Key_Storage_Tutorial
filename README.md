@@ -137,13 +137,13 @@ Navigate to the new station project folder and run:
 idf.py menuconfig
 ```
 
-This will open a configuration window. You can use the arrow keys to navigate to each option, press `enter` to enter a sub-menu, and press `ESC` to leave a submenu. The controls are also shown at the bottom of the window.
+This will open a configuration window. You can use the arrow keys to navigate to each option, press Enter to enter a sub-menu, and press ESC to leave a submenu. The controls are also shown at the bottom of the window.
 
 Navigate to the `Example Configuration` menu and enter your WiFi SSID and password. (For context to my screenshots, I have opened a mobile hotspot on my machine and set the SSID to **esplab-hotspot** and password to **ilovebagels**.)
 
 ![menuconfig_password](https://user-images.githubusercontent.com/11084018/160431684-f3e81c93-33c3-4f94-abdb-04c8599bd18e.png)
 
-Press `ESC` to return to the main menu, then `ESC` again to quit. You will be prompted to save the changes. Press `Y` to confirm. Now run:
+Press ESC to return to the main menu, then ESC again to quit. You will be prompted to save the changes. Press Y to confirm. Now run:
 
 ```
 idf.py build flash monitor
@@ -181,19 +181,63 @@ Replace {SSID} with your network SSID. You should see the SSID return in red tex
 
 ### Generating the Flash Encryption Key
 
-TODO
+Now we will defend against the physical attack by encrypting the firmware. First, generate the flash encryption key:
+
+```
+espsecure.py generate_flash_encryption_key flash_encryption_key
+```
+
+A flash encryption key will be generated and stored in the file <ins>flash_encryption_key</ins>.
 
 ### Enabling Flash Encryption
 
-TODO
+Now we will store the key in eFuse Block 1. Run the command:
+
+```
+espefuse.py burn_key BLK1 flash_encryption_key
+```
+
+This will prompt a warning informing you that the operation is irreversible. This is due to the OTP (one time programmable) nature of the eFuses. Type `BURN` to continue on and wite the key into the block.
 
 ![burn_flash_encryption_key](https://user-images.githubusercontent.com/11084018/160431784-aa84b6e0-ffcc-4b52-9b9e-4115594db4d0.png)
 
+There are a few other actions needed to enable flash encryption. Open the project configuration menu:
+
+```
+idf.py menuconfig
+```
+
+Navigate to the `Security Features` menu and enable the option `Enable flash encryption on boot`. Make sure that the usage mode is set to `Release`, not `Development`. These settings will ensure that the bootloader is compiled to support flash encryption. Now save your configuration (hit ESC a few times, followed by Y to save your changes).
+
 ### Running an Encrypted Application
+
+Build and upload the firmware to your ESP32, and open the serial monitor:
+
+```
+idf.py build flash monitor
+```
+
+Before running the application, the bootloader will detect that flash encryption has been enabled. It will prompt the chip to set the corresponding eFuses in Block 0 and encrypt our application, which starts at flash address 0x10000. This encryption step will take a minute or two, so be patient. You will see output resembling the following:
 
 ![flash_encryption_bootloader](https://user-images.githubusercontent.com/11084018/160431813-e35ea1fa-2ec0-4605-91a9-bc5e793487d1.png)
 
+**CAUTION: Do NOT interrupt the power flow or serial monitor while the chip is encrypting the application, or you may corrupt the device.**
+
+When this completes, the device will reboot and run your application, just like before. However, the firmware stored inside the flash region is now encrypted.
+
+Now exit the serial monitor and take a look at the eFuse summary again:
+
+```
+espefuse.py summary
+```
+
+You will see that FLASH_CRYPT_CNT and BLK1 have been modified:
+
 ![efuse_fields_set](https://user-images.githubusercontent.com/11084018/160431839-be4ebc42-06a8-49ca-872e-f84a9a5e7051.png)
+
+FLASH_CRYPT_CNT informs the ESP32 whether or not flash encryption is enabled. It is a 7-bit field, meaning its highest value is 127. If an odd number of bits are set to 1, then flash encryption is enabled. Otherwise, flash encryption is disabled. Based on the value of FLASH_CRYPT_CNT, which is 127 (i.e., all 7 bits are 1), we can see that flash encryption is enabled. Furthermore, eFuse bits are OTP (cannot be changed from 1 to 0, only from 0 to 1). Therefore, FLASH_CRYPT_CNT cannot be changed from the value 127. This means flash encryption cannot be disabled.
+
+BLK1 hides the true value of the flash encryption key due to the secrecy of that data. However, the output (`= ?? ?? ... ?? ?? -/-`) indicates that the key was stored successfully and cannot be read or modified. Trying to write a new key into Block 1 results in an error:
 
 ![burn_key_error](https://user-images.githubusercontent.com/11084018/160431859-f500a0c0-43db-41f9-a4fa-c7e1a76ffe08.png)
 
