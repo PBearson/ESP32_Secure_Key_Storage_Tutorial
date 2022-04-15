@@ -1,4 +1,4 @@
-# ESP32 Secure Key Storage Tutorial
+# ESP32 Secure Key Storage
 
 ## Goals of this Tutorial
 
