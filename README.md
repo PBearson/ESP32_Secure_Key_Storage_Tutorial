@@ -53,7 +53,7 @@ Now, plug the ESP32 into your computer. You can confirm that the driver was inst
 
 Now we will run the example "hello_world" application for the ESP32, located in the following directory: _/home/esplab/esp/workspace/hello_world_. In your terminal, navigate to this directory. Now run:
 
-```
+```sh
 idf.py build
 ```
 
@@ -63,19 +63,19 @@ This will compile the application. The compilation will take a moment to complet
 
 To upload the compiled firmware to your board, run:
 
-```
+```sh
 idf.py flash
 ```
 
 A common error you may see at this point is "RuntimeError: No serial ports founds", which occurs when the build system cannot identify the ESP32 serial port. You can find this serial port yourself by running:
 
-```
+```sh
 ls /dev/ttyUSB*
 ```
 
 This should return a file such as "/dev/ttyUSB0". If you see this file, then rerun the command as:
 
-```
+```sh
 idf.py -p /dev/ttyUSB0 flash
 ```
 
@@ -89,13 +89,13 @@ If the flash command works, you will see that the firmware will upload to the bo
 
 To monitor output from the application, run:
 
-```
+```sh
 idf.py monitor
 ```
 
 Or:
 
-```
+```sh
 idf.py -p /dev/ttyUSB0 monitor
 ```
 
@@ -111,7 +111,7 @@ The ESP32's secure key storage is managed by a 1024-bit eFuse memory region, sub
 
 To view the eFuse memory contents, simply run:
 
-```
+```sh
 espefuse.py summary
 ```
 
@@ -119,7 +119,7 @@ This will print the identifier, description, value, and read/write permissions o
 
 ![efuse_fields_initial](https://user-images.githubusercontent.com/11084018/160431621-197ecff4-d243-4bb7-9c2f-37ba665e982f.png)
 
-The FLASH_CRYPT_CNT and BLK1 eFuses are most important to flash encryption. FLASH_CRYPT_CONFIG is also important as it affects the behavior of the encryption algorithm. For more information on this algorithm, see [here](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/security/flash-encryption.html#flash-encryption-algorithm).
+The FLASH_CRYPT_CNT and BLOCK1 eFuses are most important to flash encryption. FLASH_CRYPT_CONFIG is also important as it affects the behavior of the encryption algorithm. For more information on this algorithm, see [here](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/security/flash-encryption.html#flash-encryption-algorithm).
 
 ## Physical Attack
 
@@ -133,7 +133,7 @@ git clone https://github.com/PBearson/ESP32_Secure_Key_Storage_Tutorial.git
 
 Navigate to the new station project folder and run:
 
-```
+```sh
 idf.py menuconfig
 ```
 
@@ -145,7 +145,7 @@ Navigate to the `Example Configuration` menu and enter your WiFi SSID and passwo
 
 Press ESC to return to the main menu, then ESC again to quit. You will be prompted to save the changes. Press Y to confirm. Now run:
 
-```
+```sh
 idf.py build flash monitor
 ```
 
@@ -159,7 +159,7 @@ Now we will assume the role of an attacker who has just gained physical access t
 
 First, download the firmware from the ESP32:
 
-```
+```sh
 esptool.py read_flash 0x10000 0x10000 flash_contents.bin
 ```
 
@@ -169,7 +169,7 @@ This will copy the ESP32's flash contents in the address range 0x10000 - 0x20000
 
 Now run:
 
-```
+```sh
 strings flash_contents.bin | grep -A 1 {SSID}
 ```
 
@@ -183,7 +183,7 @@ Replace {SSID} with your network SSID. You should see the SSID return in red tex
 
 Now we will defend against the physical attack by encrypting the firmware. First, generate the flash encryption key:
 
-```
+```sh
 espsecure.py generate_flash_encryption_key flash_encryption_key
 ```
 
@@ -193,8 +193,8 @@ A flash encryption key will be generated and stored in the file <ins>flash_encry
 
 Now we will store the key in eFuse Block 1. Run the command:
 
-```
-espefuse.py burn_key BLK1 flash_encryption_key
+```sh
+espefuse.py burn_key BLOCK1 flash_encryption_key
 ```
 
 This will prompt a warning informing you that the operation is irreversible. This is due to the OTP (one time programmable) nature of the eFuses. Type `BURN` to continue on and wite the key into the block.
@@ -203,7 +203,7 @@ This will prompt a warning informing you that the operation is irreversible. Thi
 
 There are a few other actions needed to enable flash encryption. Open the project configuration menu:
 
-```
+```sh
 idf.py menuconfig
 ```
 
@@ -213,7 +213,7 @@ Navigate to the `Security Features` menu and enable the option `Enable flash enc
 
 Build and upload the firmware to your ESP32, and open the serial monitor:
 
-```
+```sh
 idf.py build flash monitor
 ```
 
@@ -231,13 +231,13 @@ Now exit the serial monitor and take a look at the eFuse summary again:
 espefuse.py summary
 ```
 
-You will see that FLASH_CRYPT_CNT and BLK1 have been modified:
+You will see that FLASH_CRYPT_CNT and BLOCK1 have been modified:
 
 ![efuse_fields_set](https://user-images.githubusercontent.com/11084018/160431839-be4ebc42-06a8-49ca-872e-f84a9a5e7051.png)
 
 FLASH_CRYPT_CNT informs the ESP32 whether or not flash encryption is enabled. It is a 7-bit field, meaning its highest value is 127. If an odd number of bits are set to 1, then flash encryption is enabled. Otherwise, flash encryption is disabled. Based on the value of FLASH_CRYPT_CNT, which is 127 (i.e., all 7 bits are 1), we can see that flash encryption is enabled. Furthermore, eFuse bits are OTP (cannot be changed from 1 to 0, only from 0 to 1). Therefore, FLASH_CRYPT_CNT cannot be changed from the value 127. This means flash encryption cannot be disabled.
 
-BLK1 hides the true value of the flash encryption key due to the secrecy of that data. However, the output (`= ?? ?? ... ?? ?? -/-`) indicates that the key was stored successfully and cannot be read or modified. Trying to write a new key into Block 1 results in an error:
+BLOCK1 hides the true value of the flash encryption key due to the secrecy of that data. However, the output (`= ?? ?? ... ?? ?? -/-`) indicates that the key was stored successfully and cannot be read or modified. Trying to write a new key into Block 1 results in an error:
 
 ![burn_key_error](https://user-images.githubusercontent.com/11084018/160431859-f500a0c0-43db-41f9-a4fa-c7e1a76ffe08.png)
 
@@ -245,13 +245,13 @@ BLK1 hides the true value of the flash encryption key due to the secrecy of that
 
 Now we again assume the role of an attacker. Download the firmware from the ESP32:
 
-```
+```sh
 esptool.py read_flash 0x10000 0x10000 flash_contents.bin
 ```
 
 When the download completes, try to find the SSID and password again:
 
-```
+```sh
 strings flash_contents.bin | grep -A 1 {SSID}
 ```
 
@@ -263,7 +263,7 @@ The bootloader will only perform the encryption operation once, so uploading ano
 
 Let's try to upload the "hello_world" application again. Navigate to the "hello_world" project directory and run:
 
-```
+```sh
 idf.py build flash monitor
 ```
 
@@ -273,11 +273,11 @@ You will see a "flash read err" message indicating that the firmware cannot be r
 
 However, since we pre-generated the flash encryption key which is stored in eFuse Block 1, we can encrypt the firmware before uploading it to the board. Copy the flash encryption key into the current directory. Then run the following commands:
 
-```
+```sh
 espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/bootloader/bootloader.bin.encrypted --address 0x1000 build/bootloader/bootloader.bin
 espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/partition_table/partition-table.bin.encrypted --address 0x8000 build/partition_table/partition-table.bin
-espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/helloworld.bin.encrypted --address 0x10000 build/hello-world.bin
-esptool.py write_flash 0x1000 build/bootloader/bootloader.bin.encrypted 0x8000 build/partition_table/partition-table.bin.encrypted 0x10000 build/hello-world.bin.encrypted
+espsecure.py encrypt_flash_data --keyfile flash_encryption_key --output build/wifi_station.bin.encrypted --address 0x10000 build/wifi_station.bin
+esptool.py write_flash 0x1000 build/bootloader/bootloader.bin.encrypted 0x8000 build/partition_table/partition-table.bin.encrypted 0x10000 build/wifi_station.bin.encrypted
 idf.py monitor
 ```
 
