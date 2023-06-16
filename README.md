@@ -35,12 +35,6 @@ Download the VM image from the lab materials link. Once it finishes downloading,
 
 You can also click <ins>Settings</ins> to modify the VM before booting it up. By default, it will use 8 GB of RAM and 2 CPU cores, so change these settings to suit your environment. Once you are done, click <ins>Start</ins> to boot up the machine.
 
-### Verifying the Setup
-
-First, log into the machine. The username and password are both **esplab**. Then click on the terminal icon on the left side of the screen. If all goes well, you will be greeted with the following message, indicating that the development environment is successfully installed:
-
-![vm_verify](https://user-images.githubusercontent.com/11084018/160431442-33fa2cc7-35ff-4f91-8216-c099e1f2f584.png)
-
 ### Setting up the Serial Port
 
 Now we will verify that we can program and monitor our ESP32. First, we need to install the necessary drivers. Most ESP32 boards will contain a CP210X chip which allows data transfer between UART (used by the ESP32) and USB (used by the cable). However, communicating with this chip, and therefore the ESP32 itself, requires the correct drivers to be installed on your computer. You can download the CP210X drivers to your host machine from [here](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers).
@@ -49,9 +43,24 @@ Now, plug the ESP32 into your computer. You can confirm that the driver was inst
 
 ![usb_device_highlighted](https://user-images.githubusercontent.com/11084018/160431513-580652e5-1bf5-4e42-8bec-a4af1f95f1a2.png)
 
+
+### Terminal setup
+
+
+We will start the ESP-IDF terminal within VS Code (not the Linux terminal) using the button at the bottom of VS Code. 
+
+<img src="imgs/VSCode-ESP-Terminal.png">
+
+Otherwise Within a Linux terminal, we will need to set up the environment variables so that we can use all the tools without inputting the full path names. This can be done with the ``` export.sh ``` script as shown below.
+```sh
+. $HOME/esp/esp-idf/export.sh
+```
+
+<img src="imgs/VSCodeTerminal.png">
+
 ### Running the Example Application
 
-Now we will run the example "hello_world" application for the ESP32, located in the following directory: _/home/esplab/esp/workspace/hello_world_. In your terminal, navigate to this directory. Now run:
+Now we will run the example "wifi_station" application for the ESP32, located in the following directory: _/home/esplab/esp/esp-idf/examples/get-started/hello_world_. In your terminal, navigate to this directory. Now run:
 
 ```sh
 idf.py build
@@ -130,6 +139,7 @@ Now we will run a more sensitive application on the ESP32 and show how credentia
 ```
 git clone https://github.com/PBearson/ESP32_Secure_Key_Storage_Tutorial.git
 ```
+**Note**: By default, this project is already located in the ``` ~/esp/IoT-Examples/ ``` directory of the Ubuntu VM.
 
 Navigate to the new station project folder and run:
 
@@ -261,7 +271,7 @@ You will find that this command does not return any output (if it does, you did 
 
 The bootloader will only perform the encryption operation once, so uploading another plaintext firmware will result in soft bricking the device, because the ESP32 will assume flash contents are encrypted and attempt to transparently "decrypt" this content before it reaches the processor.
 
-Let's try to upload the "hello_world" application again. Navigate to the "hello_world" project directory and run:
+Let's try to upload the "wifi_station" application again. Navigate to the "wifi_station" project directory and run:
 
 ```sh
 idf.py build flash monitor
@@ -289,7 +299,7 @@ In order, each command:
 4) Uploads the encrypted files to their appropriate addresses in the flash
 5) Opens the serial monitor
 
-You will now see the "hello_world" application running now without any errors. This method shows that as long as you have the pre-generated flash encryption key, you can always upload new firmware to the ESP32.
+You will now see the "wifi_station" application running now without any errors. This method shows that as long as you have the pre-generated flash encryption key, you can always upload new firmware to the ESP32.
 
 ### Decrypting the Firmware
 
